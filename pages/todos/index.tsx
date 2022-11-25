@@ -101,7 +101,7 @@ const Todos = () => {
           todos.map((todo: Todo) => (
             <div
               key={todo.id}
-              className="bg-slate-200 mb-6 p-6 rounded-lg w-1/2 flex items-center justify-between"
+              className="border border-gray-300 bg-slate-50 mb-6 p-6 rounded-lg w-1/2 flex items-center justify-between"
             >
               {/* Info */}
               <div>
