@@ -28,7 +28,12 @@ export default function Home() {
   return (
     <div>
       <h1 className="font-bold text-3xl">Login</h1>;
-      <button onClick={logIn}>Login</button>
+      <button
+        onClick={logIn}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+      >
+        Login
+      </button>
     </div>
   );
 }
