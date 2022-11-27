@@ -42,7 +42,7 @@ const Todos = () => {
   };
 
   const toggleTodo = ({ id, isFinished }: Todo) => {
-    fetch(`http://localhost:3000/todos/${id}`, {
+    fetch(`http://localhost:3000/todos/${user?.uid!}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -57,11 +57,10 @@ const Todos = () => {
   };
 
   const deleteTodo = ({ id }: Todo) => {
-    fetch(`http://localhost:3000/todos/${id}`, {
+    fetch(`http://localhost:3000/todos/${user?.uid!}/${id}`, {
       method: "DELETE",
     })
       .then((res) => {
-        console.log(res);
         return res.json();
       })
       .then((todos) => setTodos(todos))
@@ -70,7 +69,7 @@ const Todos = () => {
 
   const createTodo = (formData: FormData) => {
     formData.append("user", user?.uid!);
-    fetch(`http://localhost:3000/todos`, {
+    fetch(`http://localhost:3000/todos/${user?.uid!}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,13 +124,11 @@ const Todos = () => {
               {/* Info */}
               <div>
                 <div>
-                  <strong className="text-xl">
-                    {todo.id} {todo.title}
-                  </strong>
+                  <strong className="text-xl">{todo.title}</strong>
                 </div>
                 <div>
                   <p>{todo.description}</p>
-                  <p>{todo.createdAt}</p>
+                  <p>{new Date(todo.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
 
@@ -156,7 +153,9 @@ const Todos = () => {
                 <label
                   htmlFor="edit-modal"
                   className="px-4 py-2 bg-gray-500 text-white rounded-lg"
-                  onClick={() => setSelectedTodo(todo)}
+                  onClick={() => {
+                    setSelectedTodo(todo);
+                  }}
                 >
                   Edit
                 </label>
@@ -172,7 +171,7 @@ const Todos = () => {
       </section>
 
       <section>
-        {/* The button to open modal */}
+        {/* The button to open add modal */}
         <label
           htmlFor="add-modal"
           className="px-4 py-2 rounded-lg bg-orange-500 text-white"
@@ -254,7 +253,7 @@ const Todos = () => {
               const modal = document.getElementById(
                 "edit-modal"
               )! as HTMLFormElement;
-              modal.chceked = false;
+              modal.checked = false;
             }}
           >
             <div className="grid">
