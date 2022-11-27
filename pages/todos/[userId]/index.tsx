@@ -1,4 +1,4 @@
-import { initFirebase } from "../../utils/firebase";
+import { initFirebase } from "../../../utils/firebase";
 import Head from "next/head";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth } from "firebase/auth";
@@ -12,9 +12,11 @@ const Todos = () => {
   const router = useRouter();
 
   const [todos, setTodos] = useState([]);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>();
 
   interface Todo {
     id: number;
+    user: string;
     title: string;
     description: string;
     createdAt: string;
@@ -33,7 +35,7 @@ const Todos = () => {
   };
 
   const getTodos = () => {
-    fetch("http://localhost:3000/todos")
+    fetch(`http://localhost:3000/todos/${user?.uid}`)
       .then((res) => res.json())
       .then((data) => setTodos(data))
       .catch((err) => alert(err));
@@ -67,8 +69,24 @@ const Todos = () => {
   };
 
   const createTodo = (formData: FormData) => {
+    formData.append("user", user?.uid!);
     fetch(`http://localhost:3000/todos`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Object.fromEntries(formData.entries())),
+    })
+      .then((res) => res.json())
+      .then((todos) => {
+        setTodos(todos);
+      })
+      .catch((err) => alert(err));
+  };
+
+  const editTodo = (formData: FormData) => {
+    fetch(`http://localhost:3000/todos/${user?.uid!}/${selectedTodo?.id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -96,8 +114,9 @@ const Todos = () => {
         Logout
       </button>
 
+      {/* Todos */}
       <section className="flex flex-col items-center justify-center">
-        {todos &&
+        {todos.length > 0 &&
           todos.map((todo: Todo) => (
             <div
               key={todo.id}
@@ -137,6 +156,7 @@ const Todos = () => {
                 <label
                   htmlFor="edit-modal"
                   className="px-4 py-2 bg-gray-500 text-white rounded-lg"
+                  onClick={() => setSelectedTodo(todo)}
                 >
                   Edit
                 </label>
@@ -161,17 +181,31 @@ const Todos = () => {
         </label>
       </section>
 
+      {/* Add Modal */}
       <input type="checkbox" id="add-modal" className="modal-toggle" />
       <label htmlFor="add-modal" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
           <p className="text-xl font-bold mb-4">Add Todo</p>
           <form
+            id="add-form"
             action=""
             className="flex flex-col gap-4"
             onSubmit={(e) => {
               e.preventDefault();
               const data = new FormData(e.target as HTMLFormElement);
               createTodo(data);
+
+              // Reset form
+              const form = document.getElementById(
+                "add-form"
+              )! as HTMLFormElement;
+              form.reset();
+
+              // Close the modal
+              const modal = document.getElementById(
+                "add-modal"
+              )! as HTMLFormElement;
+              modal.checked = false;
             }}
           >
             <div className="grid">
@@ -202,6 +236,7 @@ const Todos = () => {
         </label>
       </label>
 
+      {/* Edit Modal */}
       <input type="checkbox" id="edit-modal" className="modal-toggle" />
       <label htmlFor="edit-modal" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
@@ -209,11 +244,17 @@ const Todos = () => {
           <form
             action=""
             className="flex flex-col gap-4"
-            id="create-form"
+            id="edit-form"
             onSubmit={(e) => {
               e.preventDefault();
               const data = new FormData(e.target as HTMLFormElement);
-              createTodo(data);
+              editTodo(data);
+
+              // Close the modal
+              const modal = document.getElementById(
+                "edit-modal"
+              )! as HTMLFormElement;
+              modal.chceked = false;
             }}
           >
             <div className="grid">
@@ -223,6 +264,7 @@ const Todos = () => {
                 type="text"
                 name="title"
                 id="title"
+                defaultValue={selectedTodo?.title}
               />
             </div>
 
@@ -232,6 +274,7 @@ const Todos = () => {
                 className="bg-gray-50 border border-gray-300 rounded-lg p-2.5"
                 name="description"
                 id="description"
+                defaultValue={selectedTodo?.description}
               />
             </div>
 

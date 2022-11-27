@@ -18,7 +18,7 @@ export default function Home() {
   }
 
   if (user) {
-    router.push("/todos");
+    router.push(`/todos/${user.uid}`);
   }
 
   const logIn = async () => {
