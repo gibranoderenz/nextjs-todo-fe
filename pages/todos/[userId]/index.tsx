@@ -1,9 +1,16 @@
 import { initFirebase } from "../../../utils/firebase";
 import Head from "next/head";
+import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import {
+  AiOutlineCheckCircle,
+  AiOutlineDelete,
+  AiOutlineEdit,
+  AiOutlineUndo,
+} from "react-icons/ai";
 
 const Todos = () => {
   initFirebase();
@@ -99,85 +106,124 @@ const Todos = () => {
   };
 
   return (
-    <div>
+    <>
       <Head>
-        <title>{user ? user.displayName + "'s Todos" : "Welcome"}</title>
+        <title>Td | {user ? user.displayName + "'s Todos" : "Welcome"}</title>
       </Head>
-      <h1 className="text-2xl font-bold">
-        {user ? user.displayName + "'s Todos" : "Welcome"}
-      </h1>
-      <button
-        onClick={logOut}
-        className="px-4 py-2 bg-red-600 text-white rounded-lg"
-      >
-        Logout
-      </button>
-
-      {/* Todos */}
-      <section className="flex flex-col items-center justify-center">
-        {todos.length > 0 &&
-          todos.map((todo: Todo) => (
-            <div
-              key={todo.id}
-              className="border border-gray-300 bg-slate-50 mb-6 p-6 rounded-lg w-1/2 flex items-center justify-between"
+      {/* Navbar */}
+      <div className="navbar bg-base-100">
+        <div className="flex-1">
+          <a className="btn btn-ghost normal-case text-xl">Td</a>
+        </div>
+        <div className="flex-none">
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+              <Image
+                src={user?.photoURL!}
+                alt="User Photo"
+                width={32}
+                height={32}
+                className="rounded-full"
+              />
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-md w-48"
             >
-              {/* Info */}
-              <div>
-                <div>
-                  <strong className="text-xl">{todo.title}</strong>
-                </div>
-                <div>
-                  <p>{todo.description}</p>
-                  <p>{new Date(todo.createdAt).toLocaleDateString()}</p>
-                </div>
-              </div>
-
-              {/* Buttons */}
-              <div className="grid gap-2">
-                {todo.isFinished ? (
-                  <button
-                    className="px-4 py-2 bg-black text-white rounded-lg"
-                    onClick={() => toggleTodo(todo)}
-                  >
-                    Undo!
-                  </button>
-                ) : (
-                  <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                    onClick={() => toggleTodo(todo)}
-                  >
-                    Done!
-                  </button>
-                )}
-
-                <label
-                  htmlFor="edit-modal"
-                  className="px-4 py-2 bg-gray-500 text-white rounded-lg"
-                  onClick={() => {
-                    setSelectedTodo(todo);
-                  }}
-                >
-                  Edit
-                </label>
+              <li className="gap-2">
+                <a>Welcome, {user?.displayName}</a>
                 <button
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
-                  onClick={() => deleteTodo(todo)}
+                  className="bg-red-600 border-none text-white px-4 py-2"
+                  onClick={logOut}
                 >
-                  Delete
+                  Logout
                 </button>
-              </div>
-            </div>
-          ))}
-      </section>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-      <section>
-        {/* The button to open add modal */}
-        <label
-          htmlFor="add-modal"
-          className="px-4 py-2 rounded-lg bg-orange-500 text-white"
-        >
-          Add Todo
-        </label>
+      {/* Content */}
+      <section className="mt-4 flex flex-col items-center justify-center px-8 md:px-0">
+        {/* Header */}
+        <div className="flex items-center justify-between w-full md:w-1/2 mb-6">
+          <h1 className="text-3xl font-bold">
+            {user ? user.displayName?.split(" ")[0] + "'s Todos" : "Welcome"}
+          </h1>
+          {/* The button to open add modal */}
+
+          <label
+            htmlFor="add-modal"
+            className="px-4 py-2 rounded-lg bg-black shadow-md text-white hover:cursor-pointer hover:scale-105 duration-75"
+          >
+            Add Todo
+          </label>
+        </div>
+
+        {/* Todos */}
+        <div className="flex flex-col items-center justify-center w-full">
+          {todos.length > 0 &&
+            todos.map((todo: Todo) => (
+              <label
+                htmlFor="edit-modal"
+                onClick={() => {
+                  setSelectedTodo(todo);
+                }}
+                key={todo.id}
+                className="border border-gray-300 bg-slate-50 mb-6 p-6 rounded-lg w-full md:w-1/2 flex items-center justify-between hover:scale-105 duration-75"
+              >
+                <div className="flex items-center gap-6">
+                  {/* Edit and Delete Button */}
+                  <div className="flex flex-col gap-4 items-center justify-center">
+                    <label
+                      htmlFor="edit-modal"
+                      className="hover:cursor-pointer"
+                      onClick={() => {
+                        setSelectedTodo(todo);
+                      }}
+                    >
+                      <AiOutlineEdit size={26} />
+                    </label>
+                    <button onClick={() => deleteTodo(todo)}>
+                      <AiOutlineDelete size={24} />
+                    </button>
+                  </div>
+                  {/* Info */}
+                  <div>
+                    <div>
+                      <strong className="text-xl">{todo.title}</strong>
+                    </div>
+                    <div>
+                      <p>{todo.description}</p>
+                      <p className="mt-4 badge">
+                        Created{" "}
+                        {new Date(todo.createdAt).toLocaleDateString("en-US", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex flex-col gap-2 items-center justify-center">
+                  {todo.isFinished ? (
+                    <button onClick={() => toggleTodo(todo)}>
+                      <AiOutlineUndo size={28} />
+                    </button>
+                  ) : (
+                    <button onClick={() => toggleTodo(todo)}>
+                      <AiOutlineCheckCircle size={28} />
+                    </button>
+                  )}
+                </div>
+              </label>
+            ))}
+        </div>
       </section>
 
       {/* Add Modal */}
@@ -227,7 +273,7 @@ const Todos = () => {
             </div>
 
             <input
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+              className="px-4 py-2 bg-black text-white rounded-lg"
               type="submit"
               value="Submit"
             />
@@ -278,14 +324,14 @@ const Todos = () => {
             </div>
 
             <input
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+              className="px-4 py-2 bg-black text-white rounded-lg"
               type="submit"
-              value="Submit"
+              value="Edit"
             />
           </form>
         </label>
       </label>
-    </div>
+    </>
   );
 };
 
