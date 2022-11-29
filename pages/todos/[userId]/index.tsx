@@ -43,31 +43,37 @@ const Todos = () => {
 
   user?.getIdToken().then((res) => console.log(res));
   const getTodos = () => {
-    fetch(`http://localhost:3000/todos/${user?.uid}`)
+    fetch(`https://nestjs-todo-be-production.up.railway.app/todos/${user?.uid}`)
       .then((res) => res.json())
       .then((data) => setTodos(data))
       .catch((err) => alert(err));
   };
 
   const toggleTodo = ({ id, isFinished }: Todo) => {
-    fetch(`http://localhost:3000/todos/${user?.uid!}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        isFinished: isFinished ? false : true,
-      }),
-    })
+    fetch(
+      `https://nestjs-todo-be-production.up.railway.app/todos/${user?.uid!}/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isFinished: isFinished ? false : true,
+        }),
+      }
+    )
       .then((res) => res.json())
       .then((todos) => setTodos(todos))
       .catch((err) => alert(err));
   };
 
   const deleteTodo = ({ id }: Todo) => {
-    fetch(`http://localhost:3000/todos/${user?.uid!}/${id}`, {
-      method: "DELETE",
-    })
+    fetch(
+      `https://nestjs-todo-be-production.up.railway.app/todos/${user?.uid!}/${id}`,
+      {
+        method: "DELETE",
+      }
+    )
       .then((res) => {
         return res.json();
       })
@@ -77,13 +83,16 @@ const Todos = () => {
 
   const createTodo = (formData: FormData) => {
     formData.append("user", user?.uid!);
-    fetch(`http://localhost:3000/todos/${user?.uid!}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(Object.fromEntries(formData.entries())),
-    })
+    fetch(
+      `https://nestjs-todo-be-production.up.railway.app/todos/${user?.uid!}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Object.fromEntries(formData.entries())),
+      }
+    )
       .then((res) => res.json())
       .then((todos) => {
         setTodos(todos);
@@ -92,13 +101,18 @@ const Todos = () => {
   };
 
   const editTodo = (formData: FormData) => {
-    fetch(`http://localhost:3000/todos/${user?.uid!}/${selectedTodo?.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(Object.fromEntries(formData.entries())),
-    })
+    fetch(
+      `https://nestjs-todo-be-production.up.railway.app/todos/${user?.uid!}/${
+        selectedTodo?.id
+      }`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Object.fromEntries(formData.entries())),
+      }
+    )
       .then((res) => res.json())
       .then((todos) => {
         setTodos(todos);

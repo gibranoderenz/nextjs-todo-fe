@@ -23,7 +23,7 @@ export default function Home() {
   if (user) {
     // add user to user table in backend
     user.getIdToken().then((idToken) => {
-      fetch(`http://localhost:3000/users`, {
+      fetch(`https://nestjs-todo-be-production.up.railway.app/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
