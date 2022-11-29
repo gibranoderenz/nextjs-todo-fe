@@ -31,7 +31,7 @@ export default function Home() {
         body: JSON.stringify({
           idToken: idToken,
         }),
-      }).then((res) => console.log(res));
+      });
 
       // redirect to user todos page
       router.push(`/todos/${user.uid}`);

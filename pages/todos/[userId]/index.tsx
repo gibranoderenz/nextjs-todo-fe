@@ -41,7 +41,6 @@ const Todos = () => {
     auth.signOut();
   };
 
-  user?.getIdToken().then((res) => console.log(res));
   const getTodos = () => {
     fetch(`https://nestjs-todo-be-production.up.railway.app/todos/${user?.uid}`)
       .then((res) => res.json())
