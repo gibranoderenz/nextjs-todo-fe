@@ -41,6 +41,7 @@ const Todos = () => {
     auth.signOut();
   };
 
+  user?.getIdToken().then((res) => console.log(res));
   const getTodos = () => {
     fetch(`http://localhost:3000/todos/${user?.uid}`)
       .then((res) => res.json())
@@ -104,7 +105,6 @@ const Todos = () => {
       })
       .catch((err) => alert(err));
   };
-
   return (
     <>
       <Head>
@@ -151,8 +151,8 @@ const Todos = () => {
           <h1 className="text-3xl font-bold">
             {user ? user.displayName?.split(" ")[0] + "'s Todos" : "Welcome"}
           </h1>
-          {/* The button to open add modal */}
 
+          {/* The button to open add modal */}
           <label
             htmlFor="add-modal"
             className="px-4 py-2 rounded-lg bg-black shadow-md text-white hover:cursor-pointer hover:scale-105 duration-75"
@@ -163,7 +163,9 @@ const Todos = () => {
 
         {/* Todos */}
         <div className="flex flex-col items-center justify-center w-full">
-          {todos.length > 0 &&
+          {todos.length == 0 ? (
+            <p>No todos added. Just yet. :)</p>
+          ) : (
             todos.map((todo: Todo) => (
               <label
                 htmlFor="edit-modal"
@@ -222,7 +224,8 @@ const Todos = () => {
                   )}
                 </div>
               </label>
-            ))}
+            ))
+          )}
         </div>
       </section>
 

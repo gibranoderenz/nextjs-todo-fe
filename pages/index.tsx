@@ -21,7 +21,21 @@ export default function Home() {
   }
 
   if (user) {
-    router.push(`/todos/${user.uid}`);
+    // add user to user table in backend
+    user.getIdToken().then((idToken) => {
+      fetch(`http://localhost:3000/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idToken: idToken,
+        }),
+      }).then((res) => console.log(res));
+
+      // redirect to user todos page
+      router.push(`/todos/${user.uid}`);
+    });
   }
 
   const logIn = async () => {
